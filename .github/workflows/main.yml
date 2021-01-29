@@ -17,12 +17,10 @@ jobs:
   # This workflow contains a single job called "build"
   build-linux:
     strategy:
+      fail-fast: false
       matrix:
-        include:
-          - p: linux_x86_64
-            a: cp38
-          - p: linux_aarch64
-            a: cp36m
+        a: [cp34m, cp35m, cp36m, cp37m, cp38]
+        p: [linux_x86_64, linux_i686, linux_aarch64]
     runs-on: ubuntu-18.04
     env:
       P: ${{ matrix.p }}
@@ -54,20 +52,17 @@ jobs:
           
       - uses: actions/upload-artifact@v2
         with:
-          name: wheels
+          name: wheels-linux-${{ matrix.p }}-${{ matrix.a }}
           path: dist/*
           
   build-macos:
     runs-on: macos-10.15
     strategy:
+      fail-fast: false
       matrix:
-        include:
-          - p: macosx-10.15-intel
-            a: cp39
-          - p: macosx-10.15-intel
-            a: cp36
+        a: [cp36, cp37, cp38, cp39]
     env:
-      P: ${{ matrix.p }}
+      P: macosx-10.15-intel
       A: ${{ matrix.a }}
     steps:
       - uses: actions/checkout@v2
@@ -123,7 +118,7 @@ jobs:
           
       - uses: actions/upload-artifact@v2
         with:
-          name: wheels
+          name: wheels-macos-${{ matrix.a }}
           path: dist/*
 
      
