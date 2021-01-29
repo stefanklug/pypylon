@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: pypylon CI
+name: build
 
 # Controls when the action will run. 
 on:
@@ -15,7 +15,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  build-linux:
     strategy:
       matrix:
         include:
@@ -51,6 +51,75 @@ jobs:
         run: |
           docker run --rm --privileged multiarch/qemu-user-static:register --reset
           ./scripts/build/build-arch.sh --platform-tag $P --abi-tag $A --pylon-dir ./pylon_installer $ARGS
+          
+      - uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: dist/*
+          
+  build-macos:
+    runs-on: macos-10.15
+    strategy:
+      matrix:
+        include:
+          - p: macosx-10.15-intel
+            a: cp39
+          - p: macosx-10.15-intel
+            a: cp36
+    env:
+      P: ${{ matrix.p }}
+      A: ${{ matrix.a }}
+    steps:
+      - uses: actions/checkout@v2
+        
+      - name: Fetch installers
+        env:
+          PYLON_DOWNLOAD_URL_BASE: ${{ secrets.PYLON_DOWNLOAD_URL_BASE }}
+        run: |
+          mkdir pylon_installer && cd pylon_installer
+          travis_retry curl -sSfL -O "${PYLON_DOWNLOAD_URL_BASE}/pylon-6.1.2.19990.zip"
+
+
+      - name: Build and test
+        run: |
+          eval "$(pyenv init -)"
+          export PATH=$HOME/.pyenv/bin:$PATH
+          case $A in
+            cp36)
+              PYENV_VERSION="3.6"
+              curl -sSfL -o python.pkg "https://www.python.org/ftp/python/3.6.8/python-3.6.8-macosx10.9.pkg"
+              ;;
+            cp37)
+              PYENV_VERSION="3.7"
+              curl -sSfL -o python.pkg "https://www.python.org/ftp/python/3.7.9/python-3.7.9-macosx10.9.pkg"
+              ;;
+            cp38)
+              PYENV_VERSION="3.8"
+              curl -sSfL -o python.pkg "https://www.python.org/ftp/python/3.8.7/python-3.8.7-macosx10.9.pkg"
+              ;;
+            cp39)
+              PYENV_VERSION="3.9"
+              curl -sSfL -o python.pkg "https://www.python.org/ftp/python/3.9.1/python-3.9.1-macosx10.9.pkg"
+              ;;
+            *)
+              echo "Invalid python version $A"
+              exit -1
+              ;;
+          esac
+          sudo installer -pkg python.pkg -target /
+          cd pylon_installer
+          unzip pylon-*.zip
+          hdiutil attach pylon-*.dmg
+          sudo installer -pkg /Volumes/pylon\ *\ Camera\ Software\ Suite/pylon-*.pkg  -target /
+          hdiutil detach /Volumes/pylon\ *\ Camera\ Software\ Suite
+          brew install swig
+          cd ${GITHUB_WORKSPACE}
+          pip3 install numpy
+          pip3 install wheel
+          # pylon 6.1 is linked against 10.14
+          export MACOSX_DEPLOYMENT_TARGET=10.14
+          python3 setup.py test
+          python3 setup.py bdist_wheel
           
       - uses: actions/upload-artifact@v2
         with:
