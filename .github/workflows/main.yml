@@ -1,0 +1,53 @@
+# This is a basic workflow to help you get started with Actions
+name: pypylon CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    strategy:
+      matrix:
+        include:
+          - p: linux_x86_64
+            a: cp38
+          - p: linux_aarch64
+            a: cp36m
+    runs-on: ubuntu-18.04
+    env:
+      P: ${{ matrix.p }}
+      A: ${{ matrix.a }}
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        
+      - name: Fetch installers
+        run: |
+          pwd
+          cd $GITHUB_WORKSPACE
+          pwd
+          mkdir pylon_installer && cd pylon_installer
+          for PYLON_VERSION in 6.1.0.19674_x86 6.1.1.19861_x86_64 6.1.3.20159_armhf 6.1.3.20159_aarch64 ; do
+            curl -sSfL -O "${PYLON_DOWNLOAD_URL_BASE}pylon_${PYLON_VERSION}_setup.tar.gz"
+          done
+          echo "Pylon Installer:" && ls
+
+
+      - name: Build with docker
+        run: |
+          docker run --rm --privileged multiarch/qemu-user-static:register --reset
+          ./scripts/build/build-arch.sh --platform-tag $P --abi-tag $A --pylon-dir ./pylon_installer $ARGS
+
+     
