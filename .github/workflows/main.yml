@@ -77,7 +77,7 @@ jobs:
           PYLON_DOWNLOAD_URL_BASE: ${{ secrets.PYLON_DOWNLOAD_URL_BASE }}
         run: |
           mkdir pylon_installer && cd pylon_installer
-          travis_retry curl -sSfL -O "${PYLON_DOWNLOAD_URL_BASE}/pylon-6.1.2.19990.zip"
+          curl -sSfL -O "${PYLON_DOWNLOAD_URL_BASE}/pylon-6.1.2.19990.zip"
 
 
       - name: Build and test
