@@ -51,5 +51,10 @@ jobs:
         run: |
           docker run --rm --privileged multiarch/qemu-user-static:register --reset
           ./scripts/build/build-arch.sh --platform-tag $P --abi-tag $A --pylon-dir ./pylon_installer $ARGS
+          
+      - uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: dist/*
 
      
