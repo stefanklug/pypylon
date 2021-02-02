@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        a: [cp34m, cp35m, cp36m, cp37m, cp38]
+        a: [cp34m, cp35m, cp36m, cp37m, cp38, cp39]
         p: [linux_x86_64, linux_i686, linux_aarch64]
     runs-on: ubuntu-18.04
     env:
