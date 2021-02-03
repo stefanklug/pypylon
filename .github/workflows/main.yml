@@ -14,7 +14,9 @@ on:
 
 jobs:
   fetch-installers:
-    - name: Installer list
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Installer list
         run: |
           tee pylon-installer.txt <<EOF
           pylon_6.1.0.19674_x86_setup.tar.gz
@@ -24,14 +26,14 @@ jobs:
           pylon-6.1.2.19990.zip
           EOF
 
-    - uses: actions/cache@v2
-      id: cache
-      with:
-        path: pylon-installer
-        key: pylon-installer-${{ hashFiles('pylon-installer.txt') }}
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          path: pylon-installer
+          key: pylon-installer-${{ hashFiles('pylon-installer.txt') }}
 
-    - name: Fetch installers
-      if: steps.cache.outputs.cache-hit != 'true'
+      - name: Fetch installers
+        if: steps.cache.outputs.cache-hit != 'true'
         env:
           PYLON_DOWNLOAD_URL_BASE: ${{ secrets.PYLON_DOWNLOAD_URL_BASE }}
         run: |
@@ -40,10 +42,10 @@ jobs:
             curl -sSfL -O "${PYLON_DOWNLOAD_URL_BASE}${line}"
           done <pylon-installer.txt
 
-    - uses: actions/upload-artifact@v2
-      with:
-        name: pylon-installer
-        path: pylon-installer
+      - uses: actions/upload-artifact@v2
+        with:
+          name: pylon-installer
+          path: pylon-installer
 
 
   build-linux:
