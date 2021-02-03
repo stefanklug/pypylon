@@ -40,7 +40,7 @@ jobs:
           mkdir pylon-installer && cd pylon-installer
           while read line; do
             curl -sSfL -O "${PYLON_DOWNLOAD_URL_BASE}${line}"
-          done <pylon-installer.txt
+          done <../pylon-installer.txt
 
       - uses: actions/upload-artifact@v2
         with:
