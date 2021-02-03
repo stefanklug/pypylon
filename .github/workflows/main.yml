@@ -72,6 +72,9 @@ jobs:
 
       - name: Build with docker
         run: |
+          pwd
+          ls
+          ls pylon-installer
           docker run --rm --privileged multiarch/qemu-user-static:register --reset
           ./scripts/build/build-arch.sh --platform-tag $P --abi-tag $A --pylon-dir ./pylon-installer $ARGS
           
