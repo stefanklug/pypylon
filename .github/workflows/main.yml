@@ -6,6 +6,8 @@ on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [ master ]
+    tags:
+      - '*.*.*' 
   pull_request:
     branches: [ master ]
 
@@ -13,7 +15,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  fetch-installers:
+  prepare:
     runs-on: ubuntu-18.04
     steps:
       - name: Installer list
@@ -47,10 +49,28 @@ jobs:
         with:
           name: pylon-installer
           path: pylon-installer
+          
+      - if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          echo "Deploying to production server on branch $GITHUB_REF"
+          echo "RELEASE_BUILD=1" >> $GITHUB_ENV
+        
+          
+      - name: Create Release
+        id: create_release
+        if: env.RELEASE_BUILD == '1'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
 
 
   build-linux:
-    needs: fetch-installers
+    needs: prepare
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
@@ -84,8 +104,18 @@ jobs:
           name: wheels-linux-${{ matrix.p }}-${{ matrix.a }}
           path: dist/*
           
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/*
+          asset_name: dist/*
+          
   build-macos:
-    needs: fetch-installers
+    needs: prepare
     runs-on: macos-10.15
     strategy:
       fail-fast: false
@@ -148,5 +178,9 @@ jobs:
         with:
           name: wheels-macos-${{ matrix.a }}
           path: dist/*
+          
+    deploy:
+      needs: [build-linux, build-macos]
+      
 
      
