@@ -179,8 +179,6 @@ jobs:
           name: wheels-macos-${{ matrix.a }}
           path: dist/*
           
-    deploy:
-      needs: [build-linux, build-macos]
       
 
      
