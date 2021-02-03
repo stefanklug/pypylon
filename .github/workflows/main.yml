@@ -181,7 +181,16 @@ jobs:
         with:
           name: wheels-macos-${{ matrix.a }}
           path: dist/*
-          
+     
+      - name: Upload Release Asset
+        if: needs.prepare.outputs.is_release_build
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.prepare.outputs.release_upload_url }}
+          asset_path: dist/*
+          asset_content_type: application/zip
       
 
      
