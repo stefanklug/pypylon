@@ -39,6 +39,7 @@ jobs:
         run: |
           mkdir pylon-installer && cd pylon-installer
           while read line; do
+            echo "download $line"
             curl -sSfL -O "${PYLON_DOWNLOAD_URL_BASE}${line}"
           done <../pylon-installer.txt
 
