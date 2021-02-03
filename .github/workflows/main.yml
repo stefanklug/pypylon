@@ -69,6 +69,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: pylon-installer
+          path: pylon-installer
 
       - name: Build with docker
         run: |
@@ -99,6 +100,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: pylon-installer
+          path: pylon-installer
 
 
       - name: Build and test
