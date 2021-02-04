@@ -82,6 +82,14 @@ jobs:
           OUTP: ${{ toJSON(needs.prepare.outputs) }}
         run: |
           echo "OUTP: $OUTP"
+          
+        name: Debug 3
+        if: needs.prepare.outputs.is_release_build
+        env:
+          OUTP: ${{ toJSON(needs.prepare.outputs) }}
+        run: |
+          echo "OUTP: $OUTP"
+          
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
@@ -104,8 +112,8 @@ jobs:
           path: dist/*
           
       - name: Upload Release Asset
-        if: needs.prepare.outputs.is_release_build
         uses: softprops/action-gh-release@v1
+        if: needs.prepare.outputs.is_release_build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -178,8 +186,8 @@ jobs:
           path: dist/*
      
       - name: Upload Release Asset
-        if: needs.prepare.outputs.is_release_build
         uses: softprops/action-gh-release@v1
+        if: needs.prepare.outputs.is_release_build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
