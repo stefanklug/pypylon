@@ -80,7 +80,8 @@ jobs:
       - name: Debug 2
         env:
           OUTP: ${{ toJSON(needs.prepare.outputs) }}
-        run: echo "OUTP: $OUTP"
+        run: |
+          echo "OUTP: $OUTP"
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
