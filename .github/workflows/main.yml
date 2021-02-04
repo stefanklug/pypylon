@@ -84,7 +84,7 @@ jobs:
           echo "OUTP: $OUTP"
           
       - name: Debug 3
-        if: needs.prepare.outputs.is_release_build
+        if: needs.prepare.outputs.is_release_build == true
         env:
           OUTP: ${{ toJSON(needs.prepare.outputs) }}
         run: |
