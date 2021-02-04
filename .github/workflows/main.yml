@@ -57,6 +57,10 @@ jobs:
         run: |
           echo "Build release for $GITHUB_REF"
           echo "RELEASE_BUILD=1" >> $GITHUB_ENV
+          
+      - name: Debug 1
+        run: |
+          echo "RELEASE_BUILD: $RELEASE_BUILD"
 
 
   build-linux:
@@ -73,6 +77,10 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: Debug 2
+        env:
+          OUTP: ${{ toJSON(needs.prepare.outputs) }}
+        run: echo "OUTP: $OUTP"
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
