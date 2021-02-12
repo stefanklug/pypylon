@@ -68,7 +68,7 @@ jobs:
       fail-fast: false
       matrix:
         a: [cp34m, cp35m, cp36m, cp37m, cp38, cp39]
-        p: [linux_x86_64, linux_i686, linux_aarch64, linux_armv7l, manylinux2014_x86_64, manylinux2014_i686]
+        p: [manylinux_2_17_x86_64, manylinux_2_17_i686, manylinux_2_17_aarch64, manylinux_2_17_armv7l]
     env:
       P: ${{ matrix.p }}
       A: ${{ matrix.a }}
@@ -103,6 +103,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: dist/*
+
+      - name: Publish package to TestPyPI
+        if: needs.prepare.outputs.is_release_build == 'true'
+        uses: pypa/gh-action-pypi-publish@v1.4.2
+        with:
+          user: __token__
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository_url: https://test.pypi.org/legacy/
           
           
   build-macos:
