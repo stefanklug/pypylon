@@ -17,7 +17,7 @@ RUN if cat /etc/debian_version | grep -q "8\." ; then \
         apt-get -o Acquire::Check-Valid-Until=false update; \
     fi
 
-RUN pip install wheel
+RUN pip install wheel auditwheel
 #build a new swig
 RUN mkdir /build && \
     cd /build && \
