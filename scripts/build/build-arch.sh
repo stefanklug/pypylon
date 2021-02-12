@@ -46,7 +46,7 @@ PYLON_ARCH=""
 PYLON=""
 
 BUILD_DISTRO="debian"
-if [[ $PLATFORM_TAG =~ manylinux* ]]; then
+if [[ $PLATFORM_TAG =~ manylinux2014* ]]; then
     BUILD_DISTRO="manylinux"
 fi
 
