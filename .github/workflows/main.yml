@@ -206,8 +206,6 @@ jobs:
           TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
         run: |
-          eval "$(pyenv init -)"
-          export PATH=$HOME/.pyenv/bin:$PATH
           pip3 install twine
           twine upload --non-interactive --skip-existing dist/*
 
