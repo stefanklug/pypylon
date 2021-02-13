@@ -31,7 +31,8 @@ RUN mkdir /build && \
 # RUN pip install numpy
 
 # one genicam unittest requires a french locale
-RUN apt-get update && apt-get install -y locales \
+# patchelf is needed for auditwheel
+RUN apt-get update && apt-get install -y locales patchelf\
  && rm -rf /var/lib/apt/lists/* \
  && sed -i 's/^# *\(fr_FR.UTF-8\)/\1/' /etc/locale.gen \
  && locale-gen
