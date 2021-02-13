@@ -116,7 +116,7 @@ jobs:
           files: dist/*
 
       - name: Publish package to TestPyPI
-        if: needs.prepare.outputs.is_release_build == 'true'
+        if: needs.prepare.outputs.is_release_build == 'true' && startsWith( matrix.p, 'manylinux' )
         uses: pypa/gh-action-pypi-publish@v1.4.2
         with:
           user: __token__
@@ -169,6 +169,7 @@ jobs:
               exit -1
               ;;
           esac
+          echo "PYENV_VERSION=$PYENV_VERSION" >> $GITHUB_ENV
           sudo installer -pkg python.pkg -target /
           cd pylon-installer
           unzip pylon-*.zip
@@ -199,11 +200,16 @@ jobs:
       
       - name: Publish package to TestPyPI
         if: needs.prepare.outputs.is_release_build == 'true'
-        uses: pypa/gh-action-pypi-publish@v1.4.2
-        with:
-          user: __token__
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
+        env:
+          PYENV_VERSION: ${{ env.PYENV_VERSION }}
+          TWINE_USERNAME: __token__
+          TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: |
+          eval "$(pyenv init -)"
+          export PATH=$HOME/.pyenv/bin:$PATH
+          pip3 install twine
+          twine upload --non-interactive --skip-existing dist/*
 
 
      
