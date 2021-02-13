@@ -187,5 +187,13 @@ jobs:
         with:
           files: dist/*
       
+      - name: Publish package to TestPyPI
+        if: needs.prepare.outputs.is_release_build == 'true'
+        uses: pypa/gh-action-pypi-publish@v1.4.2
+        with:
+          user: __token__
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository_url: https://test.pypi.org/legacy/
+
 
      
