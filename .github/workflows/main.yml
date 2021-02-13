@@ -207,7 +207,7 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
         run: |
           pip3 install twine
-          twine upload --non-interactive --skip-existing dist/*
+          python3 -m twine upload --non-interactive --skip-existing dist/*
 
 
      
