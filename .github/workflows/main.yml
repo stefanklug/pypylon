@@ -12,6 +12,11 @@ on:
   pull_request:
     branches: [ master ]
 
+  env:
+    TWINE_USERNAME: __token__
+    TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
+    TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -115,13 +120,11 @@ jobs:
         with:
           files: dist/*
 
-      - name: Publish package to TestPyPI
+      - name: Publish package to (Test)PyPI
         if: needs.prepare.outputs.is_release_build == 'true' && startsWith( matrix.p, 'manylinux' )
-        uses: pypa/gh-action-pypi-publish@v1.4.2
-        with:
-          user: __token__
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
+        run: |
+          sudo pip3 install twine
+          python3 -m twine upload --non-interactive --skip-existing dist/*
           
           
   build-macos:
@@ -198,15 +201,10 @@ jobs:
         with:
           files: dist/*
       
-      - name: Publish package to TestPyPI
+      - name: Publish package to (Test)PyPI
         if: needs.prepare.outputs.is_release_build == 'true'
-        env:
-          PYENV_VERSION: ${{ env.PYENV_VERSION }}
-          TWINE_USERNAME: __token__
-          TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
         run: |
-          pip3 install twine
+          sudo pip3 install twine
           python3 -m twine upload --non-interactive --skip-existing dist/*
 
 
