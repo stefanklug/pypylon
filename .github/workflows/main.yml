@@ -16,9 +16,9 @@ on:
   workflow_dispatch:
 
 env:
-    TWINE_USERNAME: __token__
-    TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
-    TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+  TWINE_USERNAME: __token__
+  TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
+  TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
 
 jobs:
   prepare:
